@@ -9,6 +9,9 @@
     <h1>메시지 입력</h1>
     <input type="text" id="message" placeholder="메시지를 입력하세요">
     <button onclick="sendMessage()">전송</button>
+    
+    <h2>발행된 메시지:</h2>
+    <p id="received-message">{{ message }}</p>
 
     <script>
         async function sendMessage() {
@@ -22,7 +25,15 @@
             });
             const data = await response.json();
             alert(data.status);
+            document.getElementById('message').value = '';  // 입력 필드 초기화
         }
+
+        // 주기적으로 메시지를 갱신하기 위한 함수
+        setInterval(async () => {
+            const response = await fetch('/latest_message');  // 최신 메시지를 가져오는 엔드포인트 호출
+            const data = await response.json();
+            document.getElementById('received-message').innerText = data.message;  // 메시지만 갱신
+        }, 1000);  // 1초마다 갱신
     </script>
 </body>
 </html>

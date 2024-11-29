@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'message_subscriber = my_subscriber_package.subscriber:main',
+            'message_publisher = my_subscriber_package.publisher:main',
         ],
     },
 )
