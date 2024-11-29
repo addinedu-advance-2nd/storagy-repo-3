@@ -1,0 +1,8 @@
+src/build/**
+!src/build/.gitkeep
+
+src/install/**
+!src/install/.gitkeep
+
+src/log/**
+!src/log/.gitkeep
