@@ -4,7 +4,10 @@ $(document).ready(function() {
     $('#position_btn_container button').click(function() {
         var value = $(this).val();
         
-        console.log(value)
+        $.ajax({
+            url: `/goal_position/${value}`,
+            type: "GET"
+        });
     });
 
 });
