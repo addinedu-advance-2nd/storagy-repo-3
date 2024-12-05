@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Request
-from fastapi import Query
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+
+import pymysql
 
 app = FastAPI()
 
@@ -17,10 +18,37 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def read_root(request: Request):
     return templates.TemplateResponse("button_index.html", {"request": request})
 
-# Goal Position 조회
 @app.get("/goal_position/{goal}")
 async def get_goal_position(goal: str):
-    print(goal)
+    # Goal Position 조회
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(f"SELECT * FROM ITEM WHERE SECTION_ID = {goal} AND POSITION_NUM = 1;")
+            result = cursor.fetchone()
+            if result:
+                return {
+                    "message": "Goal found", 
+                    "X": result['X'], 
+                    "Y": result['Y'], 
+                    "Z": result['Z'], 
+                    "W": result['W']
+                }
+            else:
+                return {"message": "Goal not found"}
+    finally:
+        conn.close()
+
+# DB 연결 
+def get_db_connection():
+    conn = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='12345678',
+        database='DAISSOTORAGY',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    return conn
 
 # FastAPI 서버 실행
 if __name__ == "__main__":

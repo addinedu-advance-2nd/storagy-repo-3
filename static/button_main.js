@@ -6,7 +6,13 @@ $(document).ready(function() {
         
         $.ajax({
             url: `/goal_position/${value}`,
-            type: "GET"
+            type: "GET",
+            success: function(response) {
+                console.log("Response from server:", response);
+            },
+            error: function(error) {
+                console.error("Error:", error);
+            }
         });
     });
 
