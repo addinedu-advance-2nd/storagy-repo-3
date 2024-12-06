@@ -26,8 +26,11 @@ async def get_goal_position(goal: str):
         with conn.cursor() as cursor:
             cursor.execute(f"SELECT * FROM ITEM WHERE SECTION_ID = {goal} AND POSITION_NUM = 1;")
             result = cursor.fetchone()
+
+            response = {}
+
             if result:
-                return {
+                response = {
                     "message": "Goal found", 
                     "X": result['X'], 
                     "Y": result['Y'], 
@@ -35,7 +38,10 @@ async def get_goal_position(goal: str):
                     "W": result['W']
                 }
             else:
-                return {"message": "Goal not found"}
+                response = {"message": "Goal not found"}
+
+            print(response)
+            return response
     finally:
         conn.close()
 
