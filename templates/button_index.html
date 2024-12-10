@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Button</title>
     <link rel="stylesheet" href="{{ url_for('static', path='button_style.css') }}">
-
 </head>
 <body>
     <main>
@@ -30,7 +29,10 @@
             </div>
             <button>계산대 안내</button>
             <button>안내 종료</button>
-        </div>`
+        </div>
     </main>
+
+    <script src="{{ url_for('static', path='jquery-3.7.1.js') }}"></script>
+    <script src="{{ url_for('static', path='button_main.js') }}"></script>
 </body>
 </html>
