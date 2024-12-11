@@ -61,6 +61,16 @@ async def search(query: str = Query(...)):
     finally:
         conn.close()
 
+@app.post("/start-guide")
+async def start_guide(data: dict):
+    x = data.get("x")
+    y = data.get("y")
+    z = data.get("z")
+    w = data.get("w")
+    
+    print(f"안내 시작: X={x}, Y={y}, Z={z}, W={w}")
+
+    return JSONResponse(content={"message": "안내가 시작되었습니다."})  # 성공 메시지 반환
 
 # DB 연결 
 def get_db_connection():

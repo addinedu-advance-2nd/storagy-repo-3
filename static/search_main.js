@@ -48,8 +48,6 @@ $(document).ready(function() {
                     y = response.y;
                     z = response.z;
                     w = response.w;
-
-                    console.log(x, y, z, w)
                 } 
                 // 결과가 없을 경우 메시지 표시
                 else {
@@ -59,6 +57,22 @@ $(document).ready(function() {
             error: function() {
                 // 에러 처리
                 $('.result-container').empty().append('<div class="result-container__message">오류가 발생했습니다.</div>');
+            }
+        });
+    });
+
+    // ! 안내 시작 버튼 클릭 시 기능
+    $(document).on('click', '.result-container__start-guide-button', function() {
+        $.ajax({
+            url: '/start-guide', 
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ x: x, y: y, z: z, w: w }), // 저장된 Goal Position 값 전송
+            success: function(response) {
+                console.log('안내 시작:', response);
+            },
+            error: function() {
+                console.log('안내 중 오류 발생');
             }
         });
     });
