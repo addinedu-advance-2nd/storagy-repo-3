@@ -6,15 +6,9 @@ from fastapi.staticfiles import StaticFiles
 import pymysql
 from decimal import Decimal
 
-import time
-
-import rclpy
-from std_msgs.msg import String
+from navigation_client import NavigationClient
 
 app = FastAPI()
-
-# ROS 초기화
-rclpy.init()
 
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory="templates")
@@ -62,15 +56,19 @@ async def search(query: str = Query(...)):
         conn.close()
 
 @app.post("/start-guide")
-async def start_guide(data: dict):
-    x = data.get("x")
-    y = data.get("y")
-    z = data.get("z")
-    w = data.get("w")
-    
-    print(f"안내 시작: X={x}, Y={y}, Z={z}, W={w}")
+async def start_guide(data: dict):  
+    try:
+        x = float(data.get("x"))
+        y = float(data.get("y"))
+        z = float(data.get("z"))
+        w = float(data.get("w"))
+        
+        navigation_client = NavigationClient()
+        navigation_client.send_goal(x, y, z, w)
 
-    return JSONResponse(content={"message": "안내가 시작되었습니다."})  # 성공 메시지 반환
+        return JSONResponse(content={"message": "Navigation started."})
+    except (ValueError, TypeError) as e:
+        raise HTTPException(status_code=400, detail="Invalid input data.")
 
 # DB 연결 
 def get_db_connection():

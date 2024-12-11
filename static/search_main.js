@@ -63,6 +63,8 @@ $(document).ready(function() {
 
     // ! 안내 시작 버튼 클릭 시 기능
     $(document).on('click', '.result-container__start-guide-button', function() {
+        console.log(`x: ${x}, y: ${y}, z: ${z}, w: ${w}`)
+
         $.ajax({
             url: '/start-guide', 
             method: 'POST',
