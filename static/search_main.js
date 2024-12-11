@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    let x, y, z, w; // Goal Position 저장 변수
+
+    // ! 검색 버튼 클릭 시 기능
     $('.search-container__form').on('submit', function(event) {
         event.preventDefault(); // 기본 폼 제출 방지
 
@@ -39,6 +42,14 @@ $(document).ready(function() {
                         </table>
                         <button class="result-container__start-guide-button">안내<br>시작</button>`;
                     $('.result-container').append(table);
+
+                    // Goal Position 값 저장
+                    x = response.x;
+                    y = response.y;
+                    z = response.z;
+                    w = response.w;
+
+                    console.log(x, y, z, w)
                 } 
                 // 결과가 없을 경우 메시지 표시
                 else {

@@ -11,8 +11,6 @@ import time
 import rclpy
 from std_msgs.msg import String
 
-from goal_publisher import GoalPublisher
-
 app = FastAPI()
 
 # ROS 초기화
@@ -39,7 +37,8 @@ async def search(query: str = Query(...)):
                                 SELECT 
                                     (SELECT NAME FROM SECTION WHERE ID = SECTION_ID) AS SECTION_NAME,
                                     NAME AS ITEM_NAME,
-                                    CONCAT(SECTION_ID, '-', POSITION_NUM) AS POSITION
+                                    CONCAT(SECTION_ID, '-', POSITION_NUM) AS POSITION,
+                                    X, Y, Z, W
                                   FROM ITEM 
                                  WHERE NAME LIKE "%{query}%"
                             ''')
@@ -50,6 +49,10 @@ async def search(query: str = Query(...)):
                     "section_name": result['SECTION_NAME'],
                     "item_name": result['ITEM_NAME'],
                     "position": result['POSITION'],
+                    "x": float(result['X']) if isinstance(result['X'], Decimal) else result['X'],
+                    "y": float(result['Y']) if isinstance(result['Y'], Decimal) else result['Y'],
+                    "z": float(result['Z']) if isinstance(result['Z'], Decimal) else result['Z'],
+                    "w": float(result['W']) if isinstance(result['W'], Decimal) else result['W'],
                 }
                 return JSONResponse(content=response)  # 200 상태 코드로 자동 반환
             else:
