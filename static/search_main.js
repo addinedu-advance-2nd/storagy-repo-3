@@ -4,6 +4,12 @@ $(document).ready(function() {
 
         var searchTerm = $('.search-container__input').val();
 
+        // searchTerm이 빈 문자열인 경우 요청을 보내지 않음
+        if (searchTerm === "") {
+            $('.result-container').empty().append('<div class="result-container__message">검색어를 입력하세요.</div>');
+            return; // 함수 종료
+        }
+
         $.ajax({
             url: '/search',
             method: 'GET',
