@@ -72,6 +72,7 @@ main {
     font-size: 20px;
     font-weight: bold;
     border-radius: 15px;
+    border-color: #ed1c24;
 }
 
 .search-container__result {
