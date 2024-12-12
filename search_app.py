@@ -6,9 +6,16 @@ from fastapi.staticfiles import StaticFiles
 import pymysql
 from decimal import Decimal
 
+import rclpy
 from navigation_client import NavigationClient
 
 app = FastAPI()
+
+# ROS 2 초기화
+rclpy.init()
+
+# NavigationClient 인스턴스 생성
+navigation_client = NavigationClient()
 
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory="templates")
@@ -63,7 +70,6 @@ async def start_guide(data: dict):
         z = float(data.get("z"))
         w = float(data.get("w"))
         
-        navigation_client = NavigationClient()
         navigation_client.send_goal(x, y, z, w)
 
         return JSONResponse(content={"message": "Navigation started."})
