@@ -71,8 +71,9 @@ async def start_guide(data: dict):
         w = float(data.get("w"))
         
         navigation_client.send_goal(x, y, z, w)
+        rclpy.spin(navigation_client.node)
 
-        return JSONResponse(content={"message": "Navigation started."})
+        return JSONResponse(content={"status": navigation_client.navigation_status})
     except (ValueError, TypeError) as e:
         raise HTTPException(status_code=400, detail="Invalid input data.")
 

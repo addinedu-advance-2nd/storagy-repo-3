@@ -71,7 +71,7 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({ x: x, y: y, z: z, w: w }), // 저장된 Goal Position 값 전송
             success: function(response) {
-                console.log('안내 시작:', response);
+                console.log('Navigation Status:', response.status);
             },
             error: function() {
                 console.log('안내 중 오류 발생');
