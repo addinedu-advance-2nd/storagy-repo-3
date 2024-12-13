@@ -11,12 +11,6 @@ from navigation_client import NavigationClient
 
 app = FastAPI()
 
-# ROS 2 초기화
-rclpy.init()
-
-# NavigationClient 인스턴스 생성
-navigation_client = NavigationClient()
-
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory="templates")
 
@@ -65,14 +59,18 @@ async def search(query: str = Query(...)):
 @app.post("/start-guide")
 async def start_guide(data: dict):  
     try:
+        rclpy.init()
+        navigation_client = NavigationClient()
+
         x = float(data.get("x"))
         y = float(data.get("y"))
         z = float(data.get("z"))
         w = float(data.get("w"))
         
         navigation_client.send_goal(x, y, z, w)
+        rclpy.spin(navigation_client.node)
 
-        return JSONResponse(content={"message": "Navigation started."})
+        return JSONResponse(content={"status": navigation_client.navigation_status})
     except (ValueError, TypeError) as e:
         raise HTTPException(status_code=400, detail="Invalid input data.")
 
