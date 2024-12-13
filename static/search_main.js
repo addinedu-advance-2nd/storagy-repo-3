@@ -86,4 +86,20 @@ $(document).ready(function() {
             }
         });
     });
+
+    function add_modal(gif, title, text) {
+        $('main').append(`
+            <div class="modal">
+                <div class="modal-content">
+                    <img src="${gif}" class="modal-content__gif">
+                    <h2 class="modal-content__title">${title}</h2>
+                    <p class="modal-content__text">${text}</p>
+                </div>
+            </div>    
+        `)
+    }
+
+    function del_modal() {
+        $('.modal').remove()
+    }
 });
