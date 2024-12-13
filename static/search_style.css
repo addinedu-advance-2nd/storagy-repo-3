@@ -118,6 +118,21 @@ main {
 .modal-content {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content__gif {
+    width: 90%;
+}
+
+.modal-content__title {
+    color: white;
+}
+
+.modal-content__text {
+    color: white;
 }
