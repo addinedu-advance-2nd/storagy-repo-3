@@ -11,6 +11,7 @@
         <div class="logo-container">
             <img class="logo-container__image" src="https://mblogthumb-phinf.pstatic.net/20160511_264/ppanppane_14629780789501CsEq_PNG/%B4%D9%C0%CC%BC%D2_%B7%CE%B0%ED_%281%29.png?type=w800" alt="다이소 로고">
         </div>
+
         <div class="button-container">
             <button class="button-container__function-group button-container__register-button">사용자 등록</button>
             <div class="search-container">
@@ -27,8 +28,15 @@
             <button class="button-container__function-group button-container__checkout-guide-button">계산대 안내</button>
             <button class="button-container__function-group button-container__end-guide-button">안내 종료</button>
         </div>
-    </main>
 
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <h2>주행 중...</h2>
+                <p>주행이 완료될 때까지 기다려 주세요.</p>
+                <iframe src="https://giphy.com/embed/fqAX24uBSS9uN8RqrQ" width="480" height="480" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            </div>
+        </div>
+    </main>  
     <script src="{{ url_for('static', path='jquery-3.7.1.js') }}"></script>
     <script src="{{ url_for('static', path='search_main.js') }}"></script>
 </body>

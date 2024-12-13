@@ -65,6 +65,10 @@ $(document).ready(function() {
     $(document).on('click', '.result-container__start-guide-button', function() {
         console.log(`x: ${x}, y: ${y}, z: ${z}, w: ${w}`)
 
+        // 주행 시작
+        console.log('주행 시작')
+        $()
+
         $.ajax({
             url: '/start-guide', 
             method: 'POST',
@@ -72,9 +76,13 @@ $(document).ready(function() {
             data: JSON.stringify({ x: x, y: y, z: z, w: w }), // 저장된 Goal Position 값 전송
             success: function(response) {
                 console.log('Navigation Status:', response.status);
+
+                if (response.status == 2) // 주행 성공
+                    console.log('주행 성공')
+                    pass
             },
             error: function() {
-                console.log('안내 중 오류 발생');
+                console.log('주행 실패');
             }
         });
     });
