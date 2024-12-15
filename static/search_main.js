@@ -41,7 +41,7 @@ $(document).ready(function() {
                                 <tr>
                                     <td>${response.section_name}</td>
                                     <td>${response.item_name}</td>
-                                    <td>${response.position}</td>
+                                    <td>${response.item_num}</td>
                                 </tr>
                             </tbody>
                         </table>
