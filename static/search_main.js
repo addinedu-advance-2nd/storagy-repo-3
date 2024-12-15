@@ -84,6 +84,9 @@ $(document).ready(function() {
                 if (response.status == 2)
                     console.log('주행 성공')
                     del_modal()
+
+                    $('.search-container__input').val('')
+                    $('.result-container').empty();
             },
             error: function() {
                 console.log('주행 실패');
