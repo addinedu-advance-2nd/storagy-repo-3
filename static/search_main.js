@@ -1,6 +1,11 @@
 $(document).ready(function() {
     let x, y, z, w; // Goal Position 저장 변수
 
+    gif_dict = {
+        'walking' : 'https://media0.giphy.com/avatars/HeyAutoHQ/DgfrJNR8oUyv.gif',
+        'crying' : 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOW93NmF2am1rdDVkd2FwMjFsMnJiamZpYmk5cjhncGt1bTZkYXV5cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QHcRJ6hMU6aedXpA03/giphy.webp'
+    }
+
     // ! 검색 버튼 클릭 시 기능
     $('.search-container__form').on('submit', function(event) {
         event.preventDefault(); // 기본 폼 제출 방지
@@ -65,9 +70,8 @@ $(document).ready(function() {
     $(document).on('click', '.result-container__start-guide-button', function() {
         console.log(`x: ${x}, y: ${y}, z: ${z}, w: ${w}`)
 
-        // 주행 시작
         console.log('주행 시작')
-        $()
+        add_modal(gif_dict.walking, '안내 중...', '안내가 완료될 때까지 기다려 주세요.')
 
         $.ajax({
             url: '/start-guide', 
@@ -77,13 +81,31 @@ $(document).ready(function() {
             success: function(response) {
                 console.log('Navigation Status:', response.status);
 
-                if (response.status == 2) // 주행 성공
+                if (response.status == 2)
                     console.log('주행 성공')
-                    pass
+                    del_modal()
             },
             error: function() {
                 console.log('주행 실패');
+                del_modal()
+                add_modal(gif_dict.crying, '안내 실패', '관리자에게 문의해주세요.')
             }
         });
     });
+
+    function add_modal(gif, title, text) {
+        $('main').append(`
+            <div class="modal">
+                <div class="modal-content">
+                    <img src="${gif}" class="modal-content__gif">
+                    <h2 class="modal-content__title">${title}</h2>
+                    <p class="modal-content__text">${text}</p>
+                </div>
+            </div>    
+        `)
+    }
+
+    function del_modal() {
+        $('.modal').remove()
+    }
 });
