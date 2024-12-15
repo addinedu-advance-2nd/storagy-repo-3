@@ -32,10 +32,13 @@ async def search(query: str = Query(...)):
                                 SELECT 
                                     (SELECT NAME FROM SECTION WHERE ID = SECTION_ID) AS SECTION_NAME,
                                     NAME AS ITEM_NAME,
-                                    CONCAT(SECTION_ID, '-', POSITION_NUM) AS POSITION,
-                                    X, Y, Z, W
-                                  FROM ITEM 
-                                 WHERE NAME LIKE "%{query}%"
+                                    CONCAT(SECTION_ID, '-', ITEM_NUM) AS ITEM_NUM,
+                                    (SELECT X FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS X,
+                                    (SELECT Y FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS Y,
+                                    (SELECT Z FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS Z,
+                                    (SELECT W FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS W
+                                FROM ITEM 
+                                WHERE NAME LIKE "%{query}%"
                             ''')
             result = cursor.fetchone()
 
@@ -43,7 +46,7 @@ async def search(query: str = Query(...)):
                 response = {
                     "section_name": result['SECTION_NAME'],
                     "item_name": result['ITEM_NAME'],
-                    "position": result['POSITION'],
+                    "item_num": result['ITEM_NUM'],
                     "x": float(result['X']) if isinstance(result['X'], Decimal) else result['X'],
                     "y": float(result['Y']) if isinstance(result['Y'], Decimal) else result['Y'],
                     "z": float(result['Z']) if isinstance(result['Z'], Decimal) else result['Z'],
