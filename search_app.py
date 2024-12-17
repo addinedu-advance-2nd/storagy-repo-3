@@ -9,6 +9,8 @@ from decimal import Decimal
 import rclpy
 from navigation_client import NavigationClient
 
+import time
+
 app = FastAPI()
 
 # Jinja2 템플릿 설정
@@ -21,6 +23,16 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("search_index.html", {"request": request})
+
+@app.post("/register-user")
+async def start_guide():  
+    try:
+        # 사용자 등록
+        time.sleep(3)
+
+        raise HTTPException(status_code=200)
+    except (ValueError, TypeError) as e:
+        raise HTTPException(status_code=400, detail="Failed to register the user.")
 
 @app.get("/search")
 async def search(query: str = Query(...)):
