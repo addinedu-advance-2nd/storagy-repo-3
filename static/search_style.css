@@ -67,12 +67,12 @@ main {
 .search-container__submit-button {
     height: 100%;
     padding: 5px 10px;
-    background-color: #ed1c24;
-    color: white;
+    background-color: #fecb00;
+    color: black;
     font-size: 20px;
     font-weight: bold;
     border-radius: 15px;
-    border-color: #ed1c24;
+    border-color: #fecb00;
 }
 
 .result-container {
@@ -93,12 +93,12 @@ main {
     width: 23%;
     height: 75%;
     padding: 5px 10px;
-    background-color: #ed1c24;
-    color: white;
+    background-color: #fecb00;
+    color: black;
     font-size: 15px;
-    font-weight: bolder;
+    font-weight: 400;
     border-radius: 15px;
-    border-color: #ed1c24;
+    border-color: #fecb00;
 }
 
 .result-container__message {
