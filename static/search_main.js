@@ -3,8 +3,30 @@ $(document).ready(function() {
 
     gif_dict = {
         'walking' : 'https://media0.giphy.com/avatars/HeyAutoHQ/DgfrJNR8oUyv.gif',
-        'crying' : 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOW93NmF2am1rdDVkd2FwMjFsMnJiamZpYmk5cjhncGt1bTZkYXV5cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QHcRJ6hMU6aedXpA03/giphy.webp'
+        'crying' : 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOW93NmF2am1rdDVkd2FwMjFsMnJiamZpYmk5cjhncGt1bTZkYXV5cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QHcRJ6hMU6aedXpA03/giphy.webp',
+        'v' : 'https://i.pinimg.com/originals/87/47/d9/8747d90daea895d7831ff0a8dd6711b4.gif'
     }
+
+    // ! 사용자 등록 버튼 클릭 시 기능
+    $(document).on('click', '.button-container__register-button', function() {
+        console.log('사용자 등록 시작')
+        add_modal(gif_dict.v, '사용자 등록', '사용자 등록을 위해 <br> 카메라에 V 제스처를 취해주세요.')
+
+        $.ajax({
+            url: '/register-user',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                console.log('사용자 등록 성공:', response);
+                del_modal()
+
+                $('.button-container__register-button').prop('disabled', true);
+            },
+            error: function(error) {
+                console.error('사용자 등록 실패:', error);
+            }
+        });
+    })
 
     // ! 검색 버튼 클릭 시 기능
     $('.search-container__form').on('submit', function(event) {
