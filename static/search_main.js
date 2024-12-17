@@ -5,7 +5,8 @@ $(document).ready(function() {
         'walking' : 'https://media0.giphy.com/avatars/HeyAutoHQ/DgfrJNR8oUyv.gif',
         'crying' : 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOW93NmF2am1rdDVkd2FwMjFsMnJiamZpYmk5cjhncGt1bTZkYXV5cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QHcRJ6hMU6aedXpA03/giphy.webp',
         'v' : 'https://i.pinimg.com/originals/87/47/d9/8747d90daea895d7831ff0a8dd6711b4.gif',
-        'money' : 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZm42dHN1OXM5N25temZ4NjBxd2Rkc21ham1zeGhpM2NwOTQ1ZTZ5dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/IO03LDOMAB5XW4sBUa/giphy.webp'
+        'money' : 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZm42dHN1OXM5N25temZ4NjBxd2Rkc21ham1zeGhpM2NwOTQ1ZTZ5dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/IO03LDOMAB5XW4sBUa/giphy.webp',
+        'tired' : 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGc5NmhvZDVwNGN5azNxMjJrbXg4cHA3OGRleGRsZjAzdTNjNHpjcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QqmYRLCb2gVXuyBbcc/giphy.webp'
     }
 
     // ! 사용자 등록 버튼 클릭 시 기능
@@ -138,6 +139,32 @@ $(document).ready(function() {
                 if (response.status == 2)
                     console.log('주행 성공')
                     del_modal()
+            },
+            error: function() {
+                console.log('주행 실패');
+                del_modal()
+                add_modal(gif_dict.crying, '안내 실패', '관리자에게 문의해주세요.')
+            }
+        });
+    });
+
+    // ! 안내 종료 버튼 클릭 시 기능
+    $(document).on('click', '.button-container__end-guide-button', function() {
+        $('.search-container__input').val('')
+        $('.result-container').empty();
+
+        console.log('주행 시작')
+        add_modal(gif_dict.tired, '안내 종료', '쇼핑 즐겁게 마치셨나요? <br> 다음에 또 돌쇠가 쇼핑을 도와드릴게요!')
+
+        $.ajax({
+            url: '/end-guide', 
+            method: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                console.log('Navigation Status:', response.status);
+
+                if (response.status == 2)
+                    console.log('주행 성공')
             },
             error: function() {
                 console.log('주행 실패');
