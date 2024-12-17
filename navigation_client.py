@@ -16,8 +16,8 @@ class NavigationClient:
         goal_msg.pose.header.stamp = self.node.get_clock().now().to_msg()
         goal_msg.pose.pose.position.x = x
         goal_msg.pose.pose.position.y = y
-        # goal_msg.pose.pose.orientation.z = z
-        # goal_msg.pose.pose.orientation.w = w
+        goal_msg.pose.pose.orientation.z = z
+        goal_msg.pose.pose.orientation.w = w
 
         # 서버가 준비될 때까지 대기
         self.action_client.wait_for_server()
