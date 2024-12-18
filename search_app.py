@@ -110,30 +110,14 @@ async def start_guide(data: dict):
 async def end_guide():  
     try:
         rclpy.init()
-        status_queue = queue.Queue(maxsize=3)  
-        subscriber_node = DetectionSubscriber(status_queue)
-        navigation_node = NavigationNode(status_queue)
+        navigation_client = NavigationClient()
         
-        goal_pose = navigation_node.create_goal_pose(0.06, 0.037, 0.0, 0.1)
-        navigation_node.goal_pose = goal_pose  
-        executor = MultiThreadedExecutor()
-        executor.add_node(subscriber_node)
-        executor.add_node(navigation_node)
-        try:
-            executor.spin()
-        except RuntimeError:
-            pass
-        finally:
-            executor.shutdown()
-            subscriber_node.destroy_node()
-            navigation_node.destroy_node()
-            rclpy.shutdown()
-
-        time.sleep(1)
+        navigation_client.send_goal(0.06, 0.037, 0.0, 0.1)
+        rclpy.spin(navigation_client.node)
 
         # TODO 아루코마커 사용 홈스테이션 위치 맞추기
 
-        return JSONResponse(content={"status": navigation_node.navigation_status})
+        return JSONResponse(content={"status": navigation_client.navigation_status})
     except (ValueError, TypeError) as e:
         raise HTTPException(status_code=400, detail="Invalid input data.")
 
