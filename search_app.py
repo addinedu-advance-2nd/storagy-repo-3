@@ -112,7 +112,7 @@ async def end_guide():
         rclpy.init()
         navigation_client = NavigationClient()
         
-        navigation_client.send_goal(0.06, 0.037, 0.0, 0.1)
+        navigation_client.send_goal(0.10, 0.03, 0.0, 0.1)
         rclpy.spin(navigation_client.node)
 
         # TODO 아루코마커 사용 홈스테이션 위치 맞추기
