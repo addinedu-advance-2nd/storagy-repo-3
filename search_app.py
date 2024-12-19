@@ -7,7 +7,12 @@ import pymysql
 from decimal import Decimal
 
 import rclpy
+from rclpy.executors import MultiThreadedExecutor
+import queue
+from base_BasicNavigator import DetectionSubscriber, NavigationNode
 from navigation_client import NavigationClient
+
+import time
 
 app = FastAPI()
 
@@ -21,6 +26,16 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("search_index.html", {"request": request})
+
+@app.post("/register-user")
+async def start_guide():  
+    try:
+        # 사용자 등록
+        time.sleep(3)
+
+        raise HTTPException(status_code=200)
+    except (ValueError, TypeError) as e:
+        raise HTTPException(status_code=400, detail="Failed to register the user.")
 
 @app.get("/search")
 async def search(query: str = Query(...)):
@@ -62,16 +77,45 @@ async def search(query: str = Query(...)):
 @app.post("/start-guide")
 async def start_guide(data: dict):  
     try:
-        rclpy.init()
-        navigation_client = NavigationClient()
-
         x = float(data.get("x"))
         y = float(data.get("y"))
         z = float(data.get("z"))
         w = float(data.get("w"))
         
-        navigation_client.send_goal(x, y, z, w)
+        rclpy.init()
+        status_queue = queue.Queue(maxsize=3)  
+        subscriber_node = DetectionSubscriber(status_queue)
+        navigation_node = NavigationNode(status_queue)
+        
+        goal_pose = navigation_node.create_goal_pose(x, y, z, w)
+        navigation_node.goal_pose = goal_pose  
+        executor = MultiThreadedExecutor()
+        executor.add_node(subscriber_node)
+        executor.add_node(navigation_node)
+        try:
+            executor.spin()
+        except RuntimeError:
+            pass
+        finally:
+            executor.shutdown()
+            subscriber_node.destroy_node()
+            navigation_node.destroy_node()
+            rclpy.shutdown()
+
+        return JSONResponse(content={"status": navigation_node.navigation_status})
+    except (ValueError, TypeError) as e:
+        raise HTTPException(status_code=400, detail="Invalid input data.")
+    
+@app.post("/end-guide")
+async def end_guide():  
+    try:
+        rclpy.init()
+        navigation_client = NavigationClient()
+        
+        navigation_client.send_goal(0.06, 0.037, 0.0, 0.1)
         rclpy.spin(navigation_client.node)
+
+        # TODO 아루코마커 사용 홈스테이션 위치 맞추기
 
         return JSONResponse(content={"status": navigation_client.navigation_status})
     except (ValueError, TypeError) as e:
