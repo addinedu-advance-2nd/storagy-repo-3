@@ -110,16 +110,26 @@ async def start_guide(data: dict):
 async def end_guide():  
     try:
         rclpy.init()
-        navigation_client = NavigationClient()
         
-        navigation_client.send_goal(0.10, 0.03, 0.0, 0.1)
-        rclpy.spin(navigation_client.node)
+        # ArUco 마커 제어 노드 초기화
+        aruco_controller = ArUcoMarkerController()
 
-        # TODO 아루코마커 사용 홈스테이션 위치 맞추기
+        # 노드 실행
+        executor = MultiThreadedExecutor()
+        executor.add_node(aruco_controller)
+        
+        try:
+            executor.spin()  # ArUco 제어 루프 실행
+        except KeyboardInterrupt:
+            aruco_controller.get_logger().info("ArUco 마커 제어 프로그램이 종료되었습니다.")
+        finally:
+            executor.shutdown()
+            aruco_controller.destroy_node()
+            rclpy.shutdown()
 
-        return JSONResponse(content={"status": navigation_client.navigation_status})
-    except (ValueError, TypeError) as e:
-        raise HTTPException(status_code=400, detail="Invalid input data.")
+        return JSONResponse(content={"status": "Home station alignment completed"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to align with home station: {str(e)}")
 
 # DB 연결 
 def get_db_connection():
