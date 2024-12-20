@@ -9,12 +9,14 @@ from decimal import Decimal
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 import queue
-from base_BasicNavigator import DetectionSubscriber, NavigationNode
+from base_BasicNavigator import DetectionSubscriber, NavigationNode, ROS2ServiceClient
 from navigation_client import NavigationClient
 
 import time
 
 app = FastAPI()
+ros_client = ROS2ServiceClient()
+
 
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory="templates")
@@ -110,23 +112,14 @@ async def start_guide(data: dict):
 async def end_guide():  
     try:
         rclpy.init()
+        navigation_client = NavigationClient()
         
-        # ArUco 마커 제어 노드 초기화
-        aruco_controller = ArUcoMarkerController()
+        navigation_client.send_goal(0.06, 0.037, 0.0, 0.1)
+        rclpy.spin(navigation_client.node)
 
-        # 노드 실행
-        executor = MultiThreadedExecutor()
-        executor.add_node(aruco_controller)
+        # 아루코마커 사용 홈스테이션 위치 맞추기
+        ros_client.call_service()
         
-        try:
-            executor.spin()  # ArUco 제어 루프 실행
-        except KeyboardInterrupt:
-            aruco_controller.get_logger().info("ArUco 마커 제어 프로그램이 종료되었습니다.")
-        finally:
-            executor.shutdown()
-            aruco_controller.destroy_node()
-            rclpy.shutdown()
-
         return JSONResponse(content={"status": "Home station alignment completed"})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to align with home station: {str(e)}")

@@ -7,6 +7,7 @@ from rclpy.qos import QoSProfile, HistoryPolicy, ReliabilityPolicy, DurabilityPo
 from rclpy.executors import MultiThreadedExecutor
 import queue
 import pygame
+from std_srvs.srv import Trigger
 
 class DetectionSubscriber(Node):
     def __init__(self, status_queue):
@@ -129,7 +130,22 @@ class NavigationNode(Node):
         while pygame.mixer.music.get_busy():
             clock.tick(30)
 
+class ROS2ServiceClient(Node):
+    def __init__(self):
+        super().__init__('ros2_service_client')
+        self.client = self.create_client(Trigger, 'home')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for service...')
 
+    def call_service(self):
+        request = Trigger.Request()
+        future = self.client.call_async(request)
+        rclpy.spin_until_future_complete(self, future)
+        if future.result() is not None:
+            return future.result()
+        else:
+            raise RuntimeError("Service call failed.")
+        
 # def main(args=None):
 #     rclpy.init(args=args)
 #     status_queue = queue.Queue(maxsize=3)  
