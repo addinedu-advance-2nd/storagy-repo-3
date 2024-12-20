@@ -11,6 +11,7 @@ from rclpy.executors import MultiThreadedExecutor
 import queue
 from base_BasicNavigator import DetectionSubscriber, NavigationNode, ROS2ServiceClient
 from navigation_client import NavigationClient
+from mask_detection_status_sub import MaskDetectionStatusSub
 
 import time
 
@@ -28,14 +29,22 @@ async def read_root(request: Request):
     return templates.TemplateResponse("search_index.html", {"request": request})
 
 @app.post("/register-user")
-async def start_guide():  
+async def register_user():  
     try:
-        # 사용자 등록
-        time.sleep(3)
+        rclpy.init()
+        node = MaskDetectionStatusSub()
 
-        raise HTTPException(status_code=200)
-    except (ValueError, TypeError) as e:
-        raise HTTPException(status_code=400, detail="Failed to register the user.")
+        try:
+            rclpy.spin(node)
+        except RuntimeError:
+            pass
+        finally:
+            result = node.detection_status
+            rclpy.shutdown()
+            return JSONResponse(content={"status": result})
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/search")
 async def search(query: str = Query(...)):

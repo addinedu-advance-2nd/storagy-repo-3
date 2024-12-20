@@ -19,8 +19,9 @@ $(document).ready(function() {
             type: 'POST',
             contentType: 'application/json',
             success: function(response) {
-                console.log('사용자 등록 성공:', response);
-                del_modal()
+                if (response.status)
+                    console.log('사용자 등록 성공:', response);
+                    del_modal()
 
                 $('.button-container__register-button').prop('disabled', true);
             },
