@@ -9,12 +9,14 @@ from decimal import Decimal
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 import queue
-from base_BasicNavigator import DetectionSubscriber, NavigationNode
+from base_BasicNavigator import DetectionSubscriber, NavigationNode, ROS2ServiceClient
 from navigation_client import NavigationClient
 
 import time
 
 app = FastAPI()
+ros_client = ROS2ServiceClient()
+
 
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory="templates")
@@ -116,6 +118,7 @@ async def end_guide():
         rclpy.spin(navigation_client.node)
 
         # TODO 아루코마커 사용 홈스테이션 위치 맞추기
+        result = ros_client.call_service()
 
         return JSONResponse(content={"status": navigation_client.navigation_status})
     except (ValueError, TypeError) as e:
