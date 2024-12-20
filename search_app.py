@@ -117,12 +117,12 @@ async def end_guide():
         navigation_client.send_goal(0.06, 0.037, 0.0, 0.1)
         rclpy.spin(navigation_client.node)
 
-        # TODO 아루코마커 사용 홈스테이션 위치 맞추기
-        result = ros_client.call_service()
-
-        return JSONResponse(content={"status": navigation_client.navigation_status})
-    except (ValueError, TypeError) as e:
-        raise HTTPException(status_code=400, detail="Invalid input data.")
+        # 아루코마커 사용 홈스테이션 위치 맞추기
+        ros_client.call_service()
+        
+        return JSONResponse(content={"status": "Home station alignment completed"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to align with home station: {str(e)}")
 
 # DB 연결 
 def get_db_connection():
