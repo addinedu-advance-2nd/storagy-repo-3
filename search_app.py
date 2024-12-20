@@ -15,8 +15,6 @@ from navigation_client import NavigationClient
 import time
 
 app = FastAPI()
-ros_client = ROS2ServiceClient()
-
 
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory="templates")
@@ -112,17 +110,25 @@ async def start_guide(data: dict):
 async def end_guide():  
     try:
         rclpy.init()
-        navigation_client = NavigationClient()
-        
-        navigation_client.send_goal(0.06, 0.037, 0.0, 0.1)
+        navigation_client = NavigationClient()       
+        navigation_client.send_goal(-0.789, 0.037, 0.0, 0.1)
         rclpy.spin(navigation_client.node)
 
-        # 아루코마커 사용 홈스테이션 위치 맞추기
-        ros_client.call_service()
+        # 아루코마커 사용 홈스테이션 위치 맞추기 
+        rclpy.init()
+        ros_client = ROS2ServiceClient()
+        
+        try:
+            ros_client.call_service()
+        except Exception as e:
+            print(e)
+        finally:                                                                                                            
+            ros_client.destroy_node()
+            rclpy.shutdown()
         
         return JSONResponse(content={"status": "Home station alignment completed"})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to align with home station: {str(e)}")
+        print(e)
 
 # DB 연결 
 def get_db_connection():
@@ -130,7 +136,7 @@ def get_db_connection():
         host='localhost',
         user='root',
         password='12345678',
-        database='DAISSOTORAGY',
+        database='DOLSOE',
         cursorclass=pymysql.cursors.DictCursor
     )
     return conn
