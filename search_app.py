@@ -12,6 +12,7 @@ import queue
 from base_BasicNavigator import DetectionSubscriber, NavigationNode, ROS2ServiceClient
 from navigation_client import NavigationClient
 from mask_detection_status_sub import MaskDetectionStatusSub
+from example_interfaces.srv import AddTwoInts
 
 import time
 
@@ -110,6 +111,23 @@ async def start_guide(data: dict):
             subscriber_node.destroy_node()
             navigation_node.destroy_node()
             rclpy.shutdown()
+
+        rclpy.init()
+
+        # 목적지 도착 안내 음성
+        client = rclpy.create_node('tts_client')
+        service_client = client.create_client(AddTwoInts, '/tts_status')
+
+        while not service_client.wait_for_service(timeout_sec=1.0):
+            client.get_logger().info('Service not available, waiting again...')
+
+        request = AddTwoInts.Request()
+        request.a = 0
+        request.b = 0
+        future = service_client.call_async(request)
+        rclpy.spin_until_future_complete(client, future)       
+        client.destroy_node()  
+        rclpy.shutdown()  
 
         return JSONResponse(content={"status": navigation_node.navigation_status})
     except (ValueError, TypeError) as e:
