@@ -6,7 +6,6 @@ from std_msgs.msg import Bool
 from rclpy.qos import QoSProfile, HistoryPolicy, ReliabilityPolicy, DurabilityPolicy
 from rclpy.executors import MultiThreadedExecutor
 import queue
-import pygame
 from std_srvs.srv import Trigger
 
 class DetectionSubscriber(Node):
@@ -43,22 +42,7 @@ class NavigationNode(Node):
         self.previous_status = False
         self.false_count = 0
         self.goal_pose = None  
-        self.music_file = "registration.mp3"
-        self.music_file2 = "lose.mp3"
-        # self.navigator.waitUntilNav2Active()
-        # self.set_initial_pose()
-        self.play_music(self.music_file)
         self.timer = self.create_timer(0.5, self.navigate_to_goal)
-
-    # def set_initial_pose(self):
-    #     initial_pose = PoseStamped()
-    #     initial_pose.header.frame_id = 'map'
-    #     initial_pose.header.stamp = self.navigator.get_clock().now().to_msg()
-    #     initial_pose.pose.position.x = 0.0
-    #     initial_pose.pose.position.y = 0.0
-    #     initial_pose.pose.orientation.z = 0.0
-    #     initial_pose.pose.orientation.w = 1.0
-    #     self.navigator.setInitialPose(initial_pose)
 
     def navigate_to_goal(self):
         print('sdlkfhsklflsjfdljsd')
@@ -87,7 +71,6 @@ class NavigationNode(Node):
             self.false_count += 1
             if self.false_count >= 40:
                 self.get_logger().info("안내 문구 시작")
-                self.play_music(self.music_file2)
                 self.false_count = 0
         else:
             self.false_count = 0
@@ -118,18 +101,6 @@ class NavigationNode(Node):
         goal_pose.pose.orientation.w = w
         return goal_pose
 
-    def play_music(self, file):
-        freq = 16000    # sampling rate
-        bitsize = -16   # signed 16 bit
-        channels = 1    # mono
-        buffer = 2048   # buffer size
-        pygame.mixer.init(freq, bitsize, channels, buffer)
-        pygame.mixer.music.load(file)
-        pygame.mixer.music.play()
-        clock = pygame.time.Clock()
-        while pygame.mixer.music.get_busy():
-            clock.tick(30)
-
 class ROS2ServiceClient(Node):
     def __init__(self):
         super().__init__('ros2_service_client')
@@ -145,28 +116,3 @@ class ROS2ServiceClient(Node):
             return future.result()
         else:
             raise RuntimeError("Service call failed.")
-        
-# def main(args=None):
-#     rclpy.init(args=args)
-#     status_queue = queue.Queue(maxsize=3)  
-#     subscriber_node = DetectionSubscriber(status_queue)
-#     navigation_node = NavigationNode(status_queue)
-    
-#     goal_pose = navigation_node.create_goal_pose(3.8, 0.572, 0.0, 1.0)
-#     navigation_node.goal_pose = goal_pose  
-#     executor = MultiThreadedExecutor()
-#     executor.add_node(subscriber_node)
-#     executor.add_node(navigation_node)
-#     try:
-#         executor.spin()
-#     except KeyboardInterrupt:
-#         subscriber_node.get_logger().info("Shutting down.")
-#     finally:
-#         executor.shutdown()
-#         subscriber_node.destroy_node()
-#         navigation_node.destroy_node()
-#         rclpy.shutdown()
-#         pygame.mixer.quit()
-
-# if __name__ == '__main__':
-#     main()
