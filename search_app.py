@@ -61,7 +61,8 @@ async def search(query: str = Query(...)):
                                     (SELECT X FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS X,
                                     (SELECT Y FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS Y,
                                     (SELECT Z FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS Z,
-                                    (SELECT W FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS W
+                                    (SELECT W FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS W,
+                                    GOAL_POSITION_ID
                                 FROM ITEM 
                                 WHERE NAME LIKE "%{query}%"
                             ''')
@@ -76,6 +77,7 @@ async def search(query: str = Query(...)):
                     "y": float(result['Y']) if isinstance(result['Y'], Decimal) else result['Y'],
                     "z": float(result['Z']) if isinstance(result['Z'], Decimal) else result['Z'],
                     "w": float(result['W']) if isinstance(result['W'], Decimal) else result['W'],
+                    "goal_position_id": result['GOAL_POSITION_ID']
                 }
                 return JSONResponse(content=response)  # 200 상태 코드로 자동 반환
             else:
@@ -91,7 +93,8 @@ async def start_guide(data: dict):
         y = float(data.get("y"))
         z = float(data.get("z"))
         w = float(data.get("w"))
-        
+        goal_position = int(data.get("goal_position"))
+
         rclpy.init()
         status_queue = queue.Queue(maxsize=3)  
         subscriber_node = DetectionSubscriber(status_queue)
@@ -122,7 +125,7 @@ async def start_guide(data: dict):
             client.get_logger().info('Service not available, waiting again...')
 
         request = AddTwoInts.Request()
-        request.a = 0
+        request.a = goal_position
         request.b = 0
         future = service_client.call_async(request)
         rclpy.spin_until_future_complete(client, future)       

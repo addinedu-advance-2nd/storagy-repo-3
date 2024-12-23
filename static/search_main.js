@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    let x, y, z, w; // Goal Position 저장 변수
+    let x, y, z, w, goal_position; // Goal Position 저장 변수
 
     gif_dict = {
         'walking' : 'https://media0.giphy.com/avatars/HeyAutoHQ/DgfrJNR8oUyv.gif',
@@ -78,6 +78,7 @@ $(document).ready(function() {
                     y = response.y;
                     z = response.z;
                     w = response.w;
+                    goal_position = response.goal_position_id
                 } 
                 // 결과가 없을 경우 메시지 표시
                 else {
@@ -93,7 +94,7 @@ $(document).ready(function() {
 
     // ! 안내 시작 버튼 클릭 시 기능
     $(document).on('click', '.result-container__start-guide-button', function() {
-        console.log(`x: ${x}, y: ${y}, z: ${z}, w: ${w}`)
+        console.log(`x: ${x}, y: ${y}, z: ${z}, w: ${w}, goal_position: ${goal_position}`)
 
         console.log('주행 시작')
         add_modal(gif_dict.walking, '안내 중...', '안내가 완료될 때까지 기다려 주세요.')
@@ -102,7 +103,7 @@ $(document).ready(function() {
             url: '/start-guide', 
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ x: x, y: y, z: z, w: w }), // 저장된 Goal Position 값 전송
+            data: JSON.stringify({ x: x, y: y, z: z, w: w, goal_position: goal_position }), // 저장된 Goal Position 값 전송
             success: function(response) {
                 console.log('Navigation Status:', response.status);
 
