@@ -11,12 +11,12 @@ from rclpy.executors import MultiThreadedExecutor
 import queue
 from base_BasicNavigator import DetectionSubscriber, NavigationNode, ROS2ServiceClient
 from navigation_client import NavigationClient
+from mask_detection_status_sub import MaskDetectionStatusSub
+from example_interfaces.srv import AddTwoInts
 
 import time
 
 app = FastAPI()
-ros_client = ROS2ServiceClient()
-
 
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory="templates")
@@ -30,14 +30,22 @@ async def read_root(request: Request):
     return templates.TemplateResponse("search_index.html", {"request": request})
 
 @app.post("/register-user")
-async def start_guide():  
+async def register_user():  
     try:
-        # 사용자 등록
-        time.sleep(3)
+        rclpy.init()
+        node = MaskDetectionStatusSub()
 
-        raise HTTPException(status_code=200)
-    except (ValueError, TypeError) as e:
-        raise HTTPException(status_code=400, detail="Failed to register the user.")
+        try:
+            rclpy.spin(node)
+        except RuntimeError:
+            pass
+        finally:
+            result = node.detection_status
+            rclpy.shutdown()
+            return JSONResponse(content={"status": result})
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/search")
 async def search(query: str = Query(...)):
@@ -53,7 +61,8 @@ async def search(query: str = Query(...)):
                                     (SELECT X FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS X,
                                     (SELECT Y FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS Y,
                                     (SELECT Z FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS Z,
-                                    (SELECT W FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS W
+                                    (SELECT W FROM GOAL_POSITION WHERE ID = GOAL_POSITION_ID) AS W,
+                                    GOAL_POSITION_ID
                                 FROM ITEM 
                                 WHERE NAME LIKE "%{query}%"
                             ''')
@@ -68,6 +77,7 @@ async def search(query: str = Query(...)):
                     "y": float(result['Y']) if isinstance(result['Y'], Decimal) else result['Y'],
                     "z": float(result['Z']) if isinstance(result['Z'], Decimal) else result['Z'],
                     "w": float(result['W']) if isinstance(result['W'], Decimal) else result['W'],
+                    "goal_position_id": result['GOAL_POSITION_ID']
                 }
                 return JSONResponse(content=response)  # 200 상태 코드로 자동 반환
             else:
@@ -83,7 +93,8 @@ async def start_guide(data: dict):
         y = float(data.get("y"))
         z = float(data.get("z"))
         w = float(data.get("w"))
-        
+        goal_position = int(data.get("goal_position"))
+
         rclpy.init()
         status_queue = queue.Queue(maxsize=3)  
         subscriber_node = DetectionSubscriber(status_queue)
@@ -102,7 +113,24 @@ async def start_guide(data: dict):
             executor.shutdown()
             subscriber_node.destroy_node()
             navigation_node.destroy_node()
-            rclpy.shutdown()
+
+        rclpy.shutdown()
+        rclpy.init()
+
+        # 목적지 도착 안내 음성
+        client = rclpy.create_node('tts_client')
+        service_client = client.create_client(AddTwoInts, '/tts_status')
+
+        while not service_client.wait_for_service(timeout_sec=1.0):
+            client.get_logger().info('Service not available, waiting again...')
+
+        request = AddTwoInts.Request()
+        request.a = goal_position
+        request.b = 0
+        future = service_client.call_async(request)
+        rclpy.spin_until_future_complete(client, future)       
+        client.destroy_node()  
+        rclpy.shutdown()  
 
         return JSONResponse(content={"status": navigation_node.navigation_status})
     except (ValueError, TypeError) as e:
@@ -112,17 +140,25 @@ async def start_guide(data: dict):
 async def end_guide():  
     try:
         rclpy.init()
-        navigation_client = NavigationClient()
-        
-        navigation_client.send_goal(0.06, 0.037, 0.0, 0.1)
+        navigation_client = NavigationClient()       
+        navigation_client.send_goal(-0.789, 0.037, 0.0, 0.1)
         rclpy.spin(navigation_client.node)
 
-        # 아루코마커 사용 홈스테이션 위치 맞추기
-        ros_client.call_service()
+        # 아루코마커 사용 홈스테이션 위치 맞추기 
+        rclpy.init()
+        ros_client = ROS2ServiceClient()
+        
+        try:
+            ros_client.call_service()
+        except Exception as e:
+            print(e)
+        finally:                                                                                                            
+            ros_client.destroy_node()
+            rclpy.shutdown()
         
         return JSONResponse(content={"status": "Home station alignment completed"})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to align with home station: {str(e)}")
+        print(e)
 
 # DB 연결 
 def get_db_connection():
@@ -130,7 +166,7 @@ def get_db_connection():
         host='localhost',
         user='root',
         password='12345678',
-        database='DAISSOTORAGY',
+        database='DOLSOE',
         cursorclass=pymysql.cursors.DictCursor
     )
     return conn

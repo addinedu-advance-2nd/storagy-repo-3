@@ -29,6 +29,52 @@
             <button class="button-container__function-group button-container__end-guide-button">안내 종료</button>
         </div>
     </main>  
+
+    <div class="modal walking_modal">
+        <div class="modal-content">
+            <img src="{{ url_for('static', path='walking.gif') }}" class="modal-content__gif">
+            <h2 class="modal-content__title">안내 중...</h2>
+            <p class="modal-content__text">안내가 완료될 때까지 기다려 주세요.
+            </p>
+        </div>
+    </div>
+
+    <div class="modal v_modal">
+        <div class="modal-content">
+            <img src="{{ url_for('static', path='v.gif') }}" class="modal-content__gif">
+            <h2 class="modal-content__title">사용자 등록</h2>
+            <p class="modal-content__text">사용자 등록을 위해 <br> 카메라에 V 제스처를 취해주세요.
+            </p>
+        </div>
+    </div>
+
+    <div class="modal crying_modal">
+        <div class="modal-content">
+            <img src="{{ url_for('static', path='crying.webp') }}" class="modal-content__gif">
+            <h2 class="modal-content__title">안내 실패</h2>
+            <p class="modal-content__text">관리자에게 문의해주세요.
+            </p>
+        </div>
+    </div>
+
+    <div class="modal money_modal">
+        <div class="modal-content">
+            <img src="{{ url_for('static', path='money.webp') }}" class="modal-content__gif">
+            <h2 class="modal-content__title">계산대 안내 중....</h2>
+            <p class="modal-content__text">안내가 완료될 때까지 기다려 주세요.
+            </p>
+        </div>
+    </div>
+
+    <div class="modal tired_modal">
+        <div class="modal-content">
+            <img src="{{ url_for('static', path='tired.webp') }}" class="modal-content__gif">
+            <h2 class="modal-content__title">안내 종료</h2>
+            <p class="modal-content__text">쇼핑 즐겁게 마치셨나요? <br> 다음에 또 돌쇠가 쇼핑을 도와드릴게요!
+            </p>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', path='jquery-3.7.1.js') }}"></script>
     <script src="{{ url_for('static', path='search_main.js') }}"></script>
 </body>
