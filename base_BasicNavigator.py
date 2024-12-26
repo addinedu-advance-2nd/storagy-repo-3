@@ -62,7 +62,7 @@ class NavigationNode(Node):
             self.previous_status = status
         if not status:
             self.false_count += 1
-            if self.false_count >= 40:
+            if self.false_count >= 20:
                 self.get_logger().info("안내 문구 시작")
                 self.send_request(6,0)
                 self.false_count = 0
@@ -96,8 +96,8 @@ class NavigationNode(Node):
         request.a = a
         request.b = b
         future = self.client.call_async(request)
-        rclpy.spin_until_future_complete(self, future)
-        return future.result()
+        # rclpy.spin_until_future_complete(self, future)
+        # return future.result()
 class ROS2ServiceClient(Node):
     def __init__(self):
         super().__init__('ros2_service_client')

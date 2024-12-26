@@ -113,8 +113,8 @@ async def start_guide(data: dict):
             executor.shutdown()
             subscriber_node.destroy_node()
             navigation_node.destroy_node()
-            rclpy.shutdown()
 
+        rclpy.shutdown()
         rclpy.init()
 
         # 목적지 도착 안내 음성
