@@ -1,0 +1,8 @@
+sam2 셋팅(cuda 12.4 사용)
+
+git clone https://github.com/Gy920/segment-anything-2-real-time
+
+pip install -e.
+
+cd checkpoints
+./download_ckpts.sh
