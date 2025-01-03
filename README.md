@@ -25,7 +25,7 @@
 
 ## 프로젝트 내 기능
 ### Youtube
-[![Video Label](https://www.youtube.com/watch?v=uGcgEVqmm5s/0.jpg)](https://www.youtube.com/watch?v=uGcgEVqmm5s)
+[![Video Label](http://img.youtube.com/vi/uGcgEVqmm5s/0.jpg)](https://www.youtube.com/watch?v=uGcgEVqmm5s)
 
 ### 로봇 구동의 한계 극복
 -  좁은 맵 안전주행
